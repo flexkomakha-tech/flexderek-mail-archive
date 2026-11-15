@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Почтовый архив flexderek.com</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-tertiary: #334155;
+      --bg-hover: #2d3748;
+      --border-color: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --accent: #38bdf8;
+      --accent-hover: #0ea5e9;
+      --accent-glow: rgba(56, 189, 248, 0.15);
+      --danger: #f43f5e;
+      --warning: #f59e0b;
+      --success: #10b981;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* TOP BAR */
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
+      font-size: 16px;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-logo {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 16px;
+      box-shadow: 0 0 16px var(--accent-glow);
+    }
+
+    .brand-meta {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .top-stats {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 13px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    .badge-accent {
+      background: var(--accent-glow);
+      border-color: rgba(56, 189, 248, 0.3);
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    /* MAIN LAYOUT */
+    .app-container {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* SIDEBAR */
+    aside {
+      width: 260px;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .sidebar-section {
+      padding: 16px 12px 8px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+      font-weight: 600;
+    }
+
+    .nav-list {
+      list-style: none;
+      padding: 0 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      margin-bottom: 2px;
+    }
+
+    .nav-item:hover {
+      background: var(--bg-hover);
+      color: var(--text-main);
+    }
+
+    .nav-item.active {
+      background: var(--accent-glow);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-count {
+      font-size: 11px;
+      padding: 2px 7px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+    }
+
+    .nav-item.active .nav-count {
+      background: rgba(56, 189, 248, 0.2);
+      color: var(--accent);
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 16px;
+      border-top: 1px solid var(--border-color);
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    /* MESSAGE LIST PANE */
+    .list-pane {
+      width: 380px;
+      background: var(--bg-primary);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .search-box {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .search-input-wrap {
+      position: relative;
+      flex: 1;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+      font-size: 13px;
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 8px 12px 8px 32px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-main);
+      font-size: 13px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-glow);
+    }
+
+    .list-header {
+      padding: 8px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-color);
+      background: rgba(15, 23, 42, 0.4);
+    }
+
+    .messages-scroll {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .message-item {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+      cursor: pointer;
+      transition: background 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .message-item:hover {
+      background: var(--bg-secondary);
+    }
+
+    .message-item.active {
+      background: rgba(56, 189, 248, 0.08);
+      border-left: 3px solid var(--accent);
+    }
+
+    .msg-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .msg-sender {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+
+    .msg-date {
+      font-size: 11px;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+
+    .msg-subject {
+      font-size: 12px;
+      color: var(--text-muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 500;
+    }
+
+    .message-item.active .msg-subject {
+      color: var(--accent);
+    }
+
+    .msg-snippet {
+      font-size: 11px;
+      color: var(--text-dim);
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      line-height: 1.4;
+    }
+
+    .pagination-bar {
+      padding: 8px 14px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-muted);
+      background: var(--bg-secondary);
+    }
+
+    .btn-page {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 4px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .btn-page:hover:not(:disabled) {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .btn-page:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* READER PANE */
+    .reader-pane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #0b1120;
+      position: relative;
+    }
+
+    .empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-dim);
+      gap: 12px;
+    }
+
+    .empty-icon {
+      font-size: 48px;
+      opacity: 0.4;
+    }
+
+    .reader-content {
+      display: none;
+      flex: 1;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .reader-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .reader-subject {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.3;
+    }
+
+    .reader-meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .reader-parties {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 13px;
+    }
+
+    .party-line {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .party-label {
+      font-size: 11px;
+      color: var(--text-dim);
+      width: 45px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .party-val {
+      color: var(--text-muted);
+    }
+
+    .party-val strong {
+      color: var(--text-main);
+    }
+
+    .reader-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-action {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .btn-action:hover {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .reader-body-wrap {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+      background: #0b1120;
+    }
+
+    .body-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      color: #e2e8f0;
+      font-size: 14px;
+      line-height: 1.6;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .body-card pre {
+      font-family: var(--font-mono);
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 13px;
+      color: #cbd5e1;
+    }
+
+    .raw-headers-pane {
+      display: none;
+      background: #020617;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #94a3b8;
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    .raw-headers-pane pre {
+      white-space: pre-wrap;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      aside {
+        display: none;
+      }
+      .list-pane {
+        width: 100%;
+      }
+      .reader-pane {
+        display: none;
+      }
+      .reader-pane.mobile-open {
+        display: flex;
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="brand">
+      <div class="brand-logo">✉️</div>
+      <div class="brand-meta">
+        <span>Почтовый архив flexderek.com</span>
+        <span class="brand-sub">Автономный веб-интерфейс резервной копии</span>
+      </div>
+    </div>
+    <div class="top-stats">
+      <div class="badge badge-accent">
+        <span>👤 wzkqkutl@flexderek.com</span>
+      </div>
+      <div class="badge">
+        <span id="stat-total">Всего: 2 105 писем</span>
+      </div>
+      <div class="badge">
+        <span>Фильтр >2МБ: 0 исключено</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <div class="app-container">
+    
+    <!-- SIDEBAR -->
+    <aside>
+      <div class="sidebar-section">Папки</div>
+      <ul class="nav-list">
+        <li class="nav-item active" data-folder="all">
+          <div class="nav-left">
+            <span>📫</span>
+            <span>Все письма</span>
+          </div>
+          <span class="nav-count" id="count-all">2105</span>
+        </li>
+        <li class="nav-item" data-folder="inbox">
+          <div class="nav-left">
+            <span>📥</span>
+            <span>Входящие (Inbox)</span>
+          </div>
+          <span class="nav-count" id="count-inbox">2103</span>
+        </li>
+        <li class="nav-item" data-folder="spam">
+          <div class="nav-left">
+            <span>🚫</span>
+            <span>Спам</span>
+          </div>
+          <span class="nav-count" id="count-spam">2</span>
+        </li>
+      </ul>
+
+      <div class="sidebar-section">Категории</div>
+      <ul class="nav-list">
+        <li class="nav-item" data-filter="daemon">
+          <div class="nav-left">
+            <span>⚠️</span>
+            <span>Ошибки доставки</span>
+          </div>
+          <span class="nav-count" id="count-daemon">...</span>
+        </li>
+        <li class="nav-item" data-filter="security">
+          <div class="nav-left">
+            <span>🛡️</span>
+            <span>Wordfence & Security</span>
+          </div>
+          <span class="nav-count" id="count-security">...</span>
+        </li>
+        <li class="nav-item" data-filter="personal">
+          <div class="nav-left">
+            <span>💬</span>
+            <span>Личные / Другие</span>
+          </div>
+          <span class="nav-count" id="count-personal">...</span>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div>Архив: <strong>backup-Jan-03-2026-1</strong></div>
+        <div style="margin-top: 4px;">Размер: ~3.2 МБ (без писем >2МБ)</div>
+      </div>
+    </aside>
+
+    <!-- MESSAGE LIST PANE -->
+    <div class="list-pane">
+      <div class="search-box">
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-input" class="search-input" placeholder="Поиск по теме, отправителю, тексту...">
+        </div>
+      </div>
+
+      <div class="list-header">
+        <span id="current-filter-label">Все письма</span>
+        <span id="filtered-count">2105 шт.</span>
+      </div>
+
+      <div class="messages-scroll" id="messages-list">
+        <!-- Rendered via JS -->
+      </div>
+
+      <div class="pagination-bar">
+        <button id="btn-prev" class="btn-page" disabled>‹ Назад</button>
+        <span id="page-info">Стр. 1 из 43</span>
+        <button id="btn-next" class="btn-page">Вперед ›</button>
+      </div>
+    </div>
+
+    <!-- READER PANE -->
+    <div class="reader-pane" id="reader-pane">
+      <div class="empty-state" id="empty-state">
+        <div class="empty-icon">📨</div>
+        <div>Выберите письмо для просмотра</div>
+      </div>
+
+      <div class="reader-content" id="reader-content">
+        <div class="reader-header">
+          <div class="reader-subject" id="reader-subject">Тема письма</div>
+          <div class="reader-meta-row">
+            <div class="reader-parties">
+              <div class="party-line">
+                <span class="party-label">От:</span>
+                <span class="party-val" id="reader-from">...</span>
+              </div>
+              <div class="party-line">
+                <span class="party-label">Кому:</span>
+                <span class="party-val" id="reader-to">...</span>
+              </div>
+              <div class="party-line">
+                <span class="party-label">Дата:</span>
+                <span class="party-val" id="reader-date">...</span>
+              </div>
+            </div>
+            <div class="reader-actions">
+              <button class="btn-action" id="btn-toggle-headers">📋 Заголовки</button>
+              <button class="btn-action" id="btn-copy-body">📄 Копировать</button>
+              <button class="btn-action" id="btn-mobile-close" style="display:none;">✕ Закрыть</button>
+            </div>
+          </div>
+
+          <div class="raw-headers-pane" id="headers-pane">
+            <pre id="headers-text"></pre>
+          </div>
+        </div>
+
+        <div class="reader-body-wrap">
+          <div class="body-card">
+            <div id="body-rendered"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- LOAD DATA (Works seamlessly from file:/// and HTTP/HTTPS) -->
+  <script src="data/index.js"></script>
+  <script src="data/emails_data.js"></script>
+
+  <script>
+    (function() {
+      let allEmails = [];
+      let filteredEmails = [];
+      let currentPage = 1;
+      const pageSize = 50;
+      let activeFolder = 'all';
+      let activeFilter = null;
+      let searchQuery = '';
+      let selectedEmailId = null;
+
+      // Initialize Data
+      function initData() {
+        if (window.MAIL_INDEX && window.MAIL_INDEX.emails) {
+          allEmails = window.MAIL_INDEX.emails;
+          document.getElementById('stat-total').textContent = `Всего: ${allEmails.length} писем`;
+          updateCategoryCounts();
+          applyFilters();
+        } else {
+          // Fallback fetch for HTTP/HTTPS
+          fetch('index.json')
+            .then(res => res.json())
+            .then(data => {
+              allEmails = data.emails;
+              updateCategoryCounts();
+              applyFilters();
+            })
+            .catch(err => {
+              console.error('Error loading index:', err);
+              document.getElementById('messages-list').innerHTML = 
+                '<div style="padding:20px;color:#f43f5e;">Ошибка загрузки базы писем.</div>';
+            });
+        }
+      }
+
+      function updateCategoryCounts() {
+        let daemon = 0;
+        let security = 0;
+        let personal = 0;
+
+        allEmails.forEach(e => {
+          const from = (e.from || '').toLowerCase();
+          const subj = (e.subject || '').toLowerCase();
+          if (from.includes('mailer-daemon') || subj.includes('mail delivery failed') || subj.includes('delayed')) {
+            daemon++;
+          } else if (from.includes('wordfence') || subj.includes('wordfence') || subj.includes('security')) {
+            security++;
+          } else {
+            personal++;
+          }
+        });
+
+        document.getElementById('count-daemon').textContent = daemon;
+        document.getElementById('count-security').textContent = security;
+        document.getElementById('count-personal').textContent = personal;
+      }
+
+      function applyFilters() {
+        filteredEmails = allEmails.filter(e => {
+          // Folder filter
+          if (activeFolder !== 'all' && e.folder !== activeFolder) {
+            return false;
+          }
+
+          // Category filter
+          if (activeFilter) {
+            const from = (e.from || '').toLowerCase();
+            const subj = (e.subject || '').toLowerCase();
+            const isDaemon = from.includes('mailer-daemon') || subj.includes('mail delivery failed') || subj.includes('delayed');
+            const isSec = from.includes('wordfence') || subj.includes('wordfence') || subj.includes('security');
+
+            if (activeFilter === 'daemon' && !isDaemon) return false;
+            if (activeFilter === 'security' && !isSec) return false;
+            if (activeFilter === 'personal' && (isDaemon || isSec)) return false;
+          }
+
+          // Search query
+          if (searchQuery) {
+            const q = searchQuery.toLowerCase();
+            const matchFrom = (e.from || '').toLowerCase().includes(q);
+            const matchTo = (e.to || '').toLowerCase().includes(q);
+            const matchSubj = (e.subject || '').toLowerCase().includes(q);
+            const matchPrev = (e.preview || '').toLowerCase().includes(q);
+            if (!matchFrom && !matchTo && !matchSubj && !matchPrev) {
+              return false;
+            }
+          }
+
+          return true;
+        });
+
+        currentPage = 1;
+        renderList();
+      }
+
+      function renderList() {
+        const total = filteredEmails.length;
+        const totalPages = Math.ceil(total / pageSize) || 1;
+        if (currentPage > totalPages) currentPage = totalPages;
+
+        document.getElementById('filtered-count').textContent = `${total} шт.`;
+        document.getElementById('page-info').textContent = `Стр. ${currentPage} из ${totalPages}`;
+        document.getElementById('btn-prev').disabled = currentPage <= 1;
+        document.getElementById('btn-next').disabled = currentPage >= totalPages;
+
+        const start = (currentPage - 1) * pageSize;
+        const pageItems = filteredEmails.slice(start, start + pageSize);
+
+        const listEl = document.getElementById('messages-list');
+        if (pageItems.length === 0) {
+          listEl.innerHTML = '<div style="padding: 24px; text-align: center; color: var(--text-dim);">Писем не найдено</div>';
+          return;
+        }
+
+        let html = '';
+        pageItems.forEach(e => {
+          const isActive = e.id === selectedEmailId ? ' active' : '';
+          const cleanDate = formatDate(e.date, e.ts);
+          html += `
+            <div class="message-item${isActive}" data-id="${e.id}">
+              <div class="msg-top">
+                <span class="msg-sender" title="${escapeHtml(e.from)}">${escapeHtml(cleanSender(e.from))}</span>
+                <span class="msg-date">${cleanDate}</span>
+              </div>
+              <div class="msg-subject" title="${escapeHtml(e.subject)}">${escapeHtml(e.subject || '(Без темы)')}</div>
+              <div class="msg-snippet">${escapeHtml(e.preview || '')}</div>
+            </div>
+          `;
+        });
+        listEl.innerHTML = html;
+
+        // Attach clicks
+        listEl.querySelectorAll('.message-item').forEach(item => {
+          item.addEventListener('click', () => {
+            const eid = parseInt(item.getAttribute('data-id'), 10);
+            selectEmail(eid);
+          });
+        });
+      }
+
+      function selectEmail(id) {
+        selectedEmailId = id;
+        document.querySelectorAll('.message-item').forEach(el => {
+          el.classList.toggle('active', parseInt(el.getAttribute('data-id'), 10) === id);
+        });
+
+        // Load details
+        if (window.MAIL_DETAILS && window.MAIL_DETAILS[id]) {
+          showEmailContent(window.MAIL_DETAILS[id]);
+        } else {
+          fetch(`emails/${id}.json`)
+            .then(res => res.json())
+            .then(data => showEmailContent(data))
+            .catch(err => {
+              console.error(err);
+              alert('Не удалось загрузить тело письма');
+            });
+        }
+      }
+
+      function showEmailContent(data) {
+        document.getElementById('empty-state').style.display = 'none';
+        const readerContent = document.getElementById('reader-content');
+        readerContent.style.display = 'flex';
+
+        document.getElementById('reader-subject').textContent = data.subject || '(Без темы)';
+        document.getElementById('reader-from').textContent = data.from || 'Не указан';
+        document.getElementById('reader-to').textContent = data.to || 'Не указан';
+        document.getElementById('reader-date').textContent = data.date || '';
+
+        // Headers
+        let headersStr = '';
+        if (data.headers) {
+          for (const [k, v] of Object.entries(data.headers)) {
+            headersStr += `${k}: ${v}\n`;
+          }
+        }
+        document.getElementById('headers-text').textContent = headersStr;
+        document.getElementById('headers-pane').style.display = 'none';
+
+        // Body
+        const bodyEl = document.getElementById('body-rendered');
+        if (data.body_html) {
+          // Render HTML safely inside iframe or sanitized div
+          bodyEl.innerHTML = `<div style="background:#fff;color:#000;padding:16px;border-radius:8px;">${data.body_html}</div>`;
+        } else {
+          bodyEl.innerHTML = `<pre>${escapeHtml(data.body_text || '(Пустое сообщение)')}</pre>`;
+        }
+
+        // On mobile open reader pane
+        if (window.innerWidth <= 900) {
+          document.getElementById('reader-pane').classList.add('mobile-open');
+          document.getElementById('btn-mobile-close').style.display = 'inline-flex';
+        }
+      }
+
+      function cleanSender(str) {
+        if (!str) return 'Неизвестно';
+        return str.replace(/<.*?>/g, '').replace(/"/g, '').trim() || str;
+      }
+
+      function formatDate(dateStr, ts) {
+        if (ts && ts > 0) {
+          const d = new Date(ts * 1000);
+          return d.toLocaleDateString('ru-RU', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+        return (dateStr || '').slice(0, 16);
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/&/g, '&amp;')
+                  .replace(/</g, '&lt;')
+                  .replace(/>/g, '&gt;')
+                  .replace(/"/g, '&quot;')
+                  .replace(/'/g, '&#039;');
+      }
+
+      // Event Listeners
+      document.getElementById('btn-prev').addEventListener('click', () => {
+        if (currentPage > 1) {
+          currentPage--;
+          renderList();
+        }
+      });
+
+      document.getElementById('btn-next').addEventListener('click', () => {
+        const totalPages = Math.ceil(filteredEmails.length / pageSize);
+        if (currentPage < totalPages) {
+          currentPage++;
+          renderList();
+        }
+      });
+
+      let searchTimeout = null;
+      document.getElementById('search-input').addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          searchQuery = e.target.value.trim();
+          applyFilters();
+        }, 200);
+      });
+
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', () => {
+          document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+          item.classList.add('active');
+
+          const folder = item.getAttribute('data-folder');
+          const filter = item.getAttribute('data-filter');
+
+          if (folder) {
+            activeFolder = folder;
+            activeFilter = null;
+            document.getElementById('current-filter-label').textContent = item.querySelector('span:nth-child(2)').textContent;
+          } else if (filter) {
+            activeFolder = 'all';
+            activeFilter = filter;
+            document.getElementById('current-filter-label').textContent = item.querySelector('span:nth-child(2)').textContent;
+          }
+
+          applyFilters();
+        });
+      });
+
+      document.getElementById('btn-toggle-headers').addEventListener('click', () => {
+        const pane = document.getElementById('headers-pane');
+        pane.style.display = pane.style.display === 'block' ? 'none' : 'block';
+      });
+
+      document.getElementById('btn-copy-body').addEventListener('click', () => {
+        const text = document.getElementById('body-rendered').innerText;
+        navigator.clipboard.writeText(text).then(() => {
+          alert('Текст письма скопирован в буфер обмена!');
+        });
+      });
+
+      document.getElementById('btn-mobile-close').addEventListener('click', () => {
+        document.getElementById('reader-pane').classList.remove('mobile-open');
+      });
+
+      // Init
+      initData();
+    })();
+  </script>
+</body>
+</html>
